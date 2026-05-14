@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: fileservice
+  profiles:
+    active: s3
+
+storage:
+  backend: ${STORAGE_PROVIDER}
+  bucket: ${STORAGE_BUCKET}
+  region: ${STORAGE_REGION}
+  access-key: ${STORAGE_ACCESS_KEY}
+  secret-key: ${STORAGE_SECRET_KEY}
