@@ -38,24 +38,24 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleMetadataStorageException(MetadataStorageException e) {
         log.error("Metadata storage error: {}", e.getMessage(), e);
         ApiResponseDto response = new ApiResponseDto(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                HttpStatus.BAD_GATEWAY.value(),
+                HttpStatus.BAD_GATEWAY.getReasonPhrase(),
                 "A metadata storage error occurred. Please try again later.",
                 Boolean.FALSE
         );
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
     }
 
     @ExceptionHandler(S3StorageProviderException.class)
     public ResponseEntity<Object> handleS3StorageProviderException(S3StorageProviderException e) {
         log.error("Storage provider error: {}", e.getMessage(), e);
         ApiResponseDto response = new ApiResponseDto(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                HttpStatus.BAD_GATEWAY.value(),
+                HttpStatus.BAD_GATEWAY.getReasonPhrase(),
                 "A file storage error occurred. Please try again later.",
                 Boolean.FALSE
         );
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(response);
     }
 
     @ExceptionHandler(Exception.class)
