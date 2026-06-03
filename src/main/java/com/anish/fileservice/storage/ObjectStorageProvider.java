@@ -10,4 +10,6 @@ public interface ObjectStorageProvider {
     SaveFileDto uploadFile(MultipartFile file, boolean isPublic);
 
     String generatePresignedUrl(String key);
+
+    void deleteFiles(List<String> keys);
 }

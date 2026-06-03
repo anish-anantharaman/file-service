@@ -1,4 +1,4 @@
-package com.anish.fileservice.exceptions;
+package com.anish.fileservice.exception;
 
 public class S3StorageProviderException extends RuntimeException {
 

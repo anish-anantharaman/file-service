@@ -1,8 +1,10 @@
 package com.anish.fileservice.service.impl;
 
-import com.anish.fileservice.dto.FileRequestDto;
+import com.anish.fileservice.dto.FileUploadRequestDto;
 import com.anish.fileservice.dto.FileUploadResponseDto;
+import com.anish.fileservice.dto.MetadataDto;
 import com.anish.fileservice.dto.SaveFileDto;
+import com.anish.fileservice.exception.MetadataStorageException;
 import com.anish.fileservice.model.Metadata;
 import com.anish.fileservice.service.FileService;
 import com.anish.fileservice.service.MetadataService;
@@ -26,18 +28,17 @@ public class FileServiceImpl implements FileService {
     private final Mapper mapper;
 
     @Override
-    public List<FileUploadResponseDto> addFiles(FileRequestDto fileRequestDto) {
-        boolean isPublic = Constants.CommonConstants.PUBLIC.equals(fileRequestDto.visibility())
+    public List<FileUploadResponseDto> addFiles(FileUploadRequestDto fileUploadRequestDto) {
+        boolean isPublic = Constants.CommonConstants.PUBLIC.equals(fileUploadRequestDto.visibility())
                 ? Boolean.TRUE : Boolean.FALSE;
         List<Metadata> metadata = new ArrayList<>();
         long currentEpochMillis = Instant.now().toEpochMilli();
 
-        for(MultipartFile file : fileRequestDto.files()) {
-            // upload files to storage provider
-            SaveFileDto saveFileDto = objectStorageProvider.uploadFile(file, isPublic);
-            // transform data for MongoDB mapping
-            Metadata data = mapper.mapToMetadata(saveFileDto, file,
-                    fileRequestDto.visibility(), currentEpochMillis);
+        for(MultipartFile file : fileUploadRequestDto.files()) {
+            SaveFileDto saveFileDto = objectStorageProvider.uploadFile(file, isPublic); // upload files to storage provider
+
+            Metadata data = mapper.mapToMetadata(saveFileDto, file,           // transform data for MongoDB mapping
+                    fileUploadRequestDto.visibility(), currentEpochMillis);
             metadata.add(data);
         }
         List<Metadata> metadataResult = metadataService.saveMetadata(metadata);
@@ -52,6 +53,26 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean deleteFiles(List<String> fileIds) {
-        return false;
+        List<MetadataDto> metadataDto = metadataService.getMetadataByIds(fileIds); // fetch the files
+        List<String> keys = metadataDto.stream()
+                .map(MetadataDto::key)
+                .toList();
+        objectStorageProvider.deleteFiles(keys);   // delete from S3
+        return metadataService.markMetadataDeletedByIds(fileIds); // mark file as deleted in metadata storage
     }
+
+    @Override
+    public String generatePresignedUrl(String fileId) {
+        List<MetadataDto> metadataDto = metadataService.getMetadataByIds(List.of(fileId));
+        if(metadataDto.isEmpty()) {
+            throw new MetadataStorageException("No file found with ID=" + fileId);
+        }
+        return objectStorageProvider.generatePresignedUrl(metadataDto.getFirst().key());
+    }
+
+    @Override
+    public List<MetadataDto> getMetadataByFileIds(List<String> fileIds) {
+        return metadataService.getMetadataByIds(fileIds);
+    }
+
 }

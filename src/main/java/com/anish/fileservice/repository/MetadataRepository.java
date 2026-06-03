@@ -1,15 +1,15 @@
 package com.anish.fileservice.repository;
 
+import com.anish.fileservice.dto.MetadataDto;
 import com.anish.fileservice.model.Metadata;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface MetadataRepository {
 
     List<Metadata> saveMetadata(List<Metadata> metadata);
 
-    Optional<Metadata> getMetadataById(String id);
+    boolean markMetadataDeletedByIds(List<String> ids);
 
-    long markMetadataDeletedByIds(List<String> ids);
+    List<MetadataDto> getMetadataByIds(List<String> ids);
 }

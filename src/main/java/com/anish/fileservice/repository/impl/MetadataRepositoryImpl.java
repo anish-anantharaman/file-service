@@ -1,8 +1,10 @@
 package com.anish.fileservice.repository.impl;
 
-import com.anish.fileservice.exceptions.MetadataStorageException;
+import com.anish.fileservice.dto.MetadataDto;
+import com.anish.fileservice.exception.MetadataStorageException;
 import com.anish.fileservice.model.Metadata;
 import com.anish.fileservice.repository.MetadataRepository;
+import com.anish.fileservice.util.Constants;
 import com.mongodb.client.result.UpdateResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @Slf4j
@@ -35,37 +36,35 @@ public class MetadataRepositoryImpl implements MetadataRepository {
     }
 
     @Override
-    public Optional<Metadata> getMetadataById(String id) {
+    public boolean markMetadataDeletedByIds(List<String> ids) {
         try {
             Query query = Query.query(
-                    Criteria.where("_id")
-                            .is(id)
-                            .and("deletedAt")
-                            .is(null)
+                    Criteria.where(Constants.MongoConstants.ID).in(ids)
+                            .and(Constants.CommonConstants.DELETED_AT).is(null)
             );
-            Metadata metadata = mongoTemplate.findById(query, Metadata.class);
-            return Optional.ofNullable(metadata);
+            Update update = new Update()
+                    .set(Constants.CommonConstants.DELETED_AT, Instant.now().toEpochMilli());
+            UpdateResult updateResult = mongoTemplate.updateMulti(query, update, Metadata.class);
+            return updateResult.getModifiedCount() == ids.size();
         } catch (DataAccessException e) {
-            log.error("Error fetching metadata for id={}: {}", id, e.getMessage(), e);
-            throw new MetadataStorageException("Error fetching metadata");
+            log.error("Error updating metadata for deleted file(s)");
+            throw new MetadataStorageException("Error in metadata deletion");
         }
     }
 
     @Override
-    public long markMetadataDeletedByIds(List<String> ids) {
+    public List<MetadataDto> getMetadataByIds(List<String> ids) {
         try {
             Query query = Query.query(
-                    Criteria.where("_id").in(ids)
-                            .and("deletedAt").is(null)
+                    Criteria.where(Constants.MongoConstants.ID)
+                            .in(ids)
+                            .and(Constants.CommonConstants.DELETED_AT)
+                            .is(null)
             );
-            Update update = new Update()
-                    .set("deletedAt", Instant.now().toEpochMilli());
-
-            UpdateResult updateResult = mongoTemplate.updateMulti(query, update, Metadata.class);
-            return updateResult.getModifiedCount();
+            return mongoTemplate.find(query, MetadataDto.class);
         } catch (DataAccessException e) {
-            log.error("Error updating metadata for deleted file(s)");
-            throw new MetadataStorageException("Error in metadata deletion");
+            log.error("Error fetching metadata for IDs={}: {}", ids, e.getMessage(), e);
+            throw new MetadataStorageException("Error fetching metadata");
         }
     }
 }

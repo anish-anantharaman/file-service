@@ -5,8 +5,9 @@ spring:
     active: s3
 
 storage:
-  backend: ${STORAGE_PROVIDER}
+  provider: ${STORAGE_PROVIDER:s3}
   bucket: ${STORAGE_BUCKET}
   region: ${STORAGE_REGION}
   access-key: ${STORAGE_ACCESS_KEY}
   secret-key: ${STORAGE_SECRET_KEY}
+  signed-url-expiry: ${STORAGE_SIGNED_URL_EXPIRY:15m}
