@@ -6,6 +6,7 @@ import com.anish.fileservice.exception.S3StorageProviderException;
 import com.anish.fileservice.storage.ObjectStorageProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkException;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@ConditionalOnProperty(prefix = "storage", name = "provider", havingValue = "s3")
 public class S3StorageProvider implements ObjectStorageProvider {
 
     private final StorageProviderProperties storageProviderProperties;
