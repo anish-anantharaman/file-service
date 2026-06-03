@@ -10,4 +10,4 @@ storage:
   region: ${STORAGE_REGION}
   access-key: ${STORAGE_ACCESS_KEY}
   secret-key: ${STORAGE_SECRET_KEY}
-  signed-url-expiry: ${STORAGE_SIGNED_URL_EXPIRY:15m}
+  signed-url-expiry: ${STORAGE_SIGNED_URL_EXPIRY:PT15M}

@@ -33,7 +33,7 @@ public class StorageProviderConfig {
                 AwsBasicCredentials.create(storageProviderProperties.accessKey(),
                         storageProviderProperties.secretKey());
         return S3Presigner.builder()
-                .region(Region.of(storageProviderProperties.accessKey()))
+                .region(Region.of(storageProviderProperties.region()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .build();
     }

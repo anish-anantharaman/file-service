@@ -3,6 +3,7 @@ package com.anish.fileservice.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.time.Duration;
+
 @ConfigurationProperties(prefix = "storage")
 public record StorageProviderProperties(
         String provider,
@@ -10,5 +11,5 @@ public record StorageProviderProperties(
         String region,
         String accessKey,
         String secretKey,
-        String signedUrlExpiry
+        Duration signedUrlExpiry
 ) { }

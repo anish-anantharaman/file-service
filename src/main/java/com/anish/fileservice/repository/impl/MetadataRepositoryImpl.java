@@ -40,10 +40,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
         try {
             Query query = Query.query(
                     Criteria.where(Constants.MongoConstants.ID).in(ids)
-                            .and(Constants.CommonConstants.DELETED_AT).is(null)
+                            .and(Constants.CommonConstants.DELETED_AT_MILLIS).is(null)
             );
             Update update = new Update()
-                    .set(Constants.CommonConstants.DELETED_AT, Instant.now().toEpochMilli());
+                    .set(Constants.CommonConstants.DELETED_AT_MILLIS, Instant.now().toEpochMilli());
             UpdateResult updateResult = mongoTemplate.updateMulti(query, update, Metadata.class);
             return updateResult.getModifiedCount() == ids.size();
         } catch (DataAccessException e) {
@@ -58,10 +58,10 @@ public class MetadataRepositoryImpl implements MetadataRepository {
             Query query = Query.query(
                     Criteria.where(Constants.MongoConstants.ID)
                             .in(ids)
-                            .and(Constants.CommonConstants.DELETED_AT)
+                            .and(Constants.CommonConstants.DELETED_AT_MILLIS)
                             .is(null)
             );
-            return mongoTemplate.find(query, MetadataDto.class);
+            return mongoTemplate.find(query, MetadataDto.class, "metadata");
         } catch (DataAccessException e) {
             log.error("Error fetching metadata for IDs={}: {}", ids, e.getMessage(), e);
             throw new MetadataStorageException("Error fetching metadata");

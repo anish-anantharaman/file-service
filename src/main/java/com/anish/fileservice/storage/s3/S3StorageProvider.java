@@ -17,7 +17,6 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
@@ -68,7 +67,7 @@ public class S3StorageProvider implements ObjectStorageProvider {
                     .build();
 
             GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.parse(storageProviderProperties.signedUrlExpiry()))
+                    .signatureDuration(storageProviderProperties.signedUrlExpiry())
                     .getObjectRequest(objectRequest)
                     .build();
             PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(presignRequest);
@@ -93,7 +92,11 @@ public class S3StorageProvider implements ObjectStorageProvider {
                             .objects(objects)
                             .build())
                     .build();
-            s3Client.deleteObjects(deleteObjectsRequest);
+            DeleteObjectsResponse deleteResponse = s3Client.deleteObjects(deleteObjectsRequest);
+            if (!deleteResponse.errors().isEmpty()) {
+                log.error("S3 batch delete partial failure: {}", deleteResponse.errors());
+                throw new S3StorageProviderException("One or more files could not be deleted from storage");
+            }
         } catch (SdkException e) {
             log.error("File deletion failed: {}", e.getMessage(), e);
             throw new S3StorageProviderException("File deletion failed");

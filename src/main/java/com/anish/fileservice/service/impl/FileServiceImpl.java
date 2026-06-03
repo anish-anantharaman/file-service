@@ -41,7 +41,14 @@ public class FileServiceImpl implements FileService {
                     fileUploadRequestDto.visibility(), currentEpochMillis);
             metadata.add(data);
         }
-        List<Metadata> metadataResult = metadataService.saveMetadata(metadata);
+        List<Metadata> metadataResult;
+        try {
+            metadataResult = metadataService.saveMetadata(metadata);
+        } catch (MetadataStorageException e) {
+            List<String> uploadedKeys = metadata.stream().map(Metadata::key).toList();
+            objectStorageProvider.deleteFiles(uploadedKeys);
+            throw e;
+        }
         return metadataResult.stream()
                 .map(meta -> new FileUploadResponseDto(
                         meta.id(),
@@ -58,7 +65,8 @@ public class FileServiceImpl implements FileService {
                 .map(MetadataDto::key)
                 .toList();
         objectStorageProvider.deleteFiles(keys);   // delete from S3
-        return metadataService.markMetadataDeletedByIds(fileIds); // mark file as deleted in metadata storage
+        List<String> foundIds = metadataDto.stream().map(MetadataDto::id).toList();
+        return metadataService.markMetadataDeletedByIds(foundIds); // mark file as deleted in metadata storage
     }
 
     @Override

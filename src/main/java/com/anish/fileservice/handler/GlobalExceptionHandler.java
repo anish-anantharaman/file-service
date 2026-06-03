@@ -1,6 +1,8 @@
 package com.anish.fileservice.handler;
 
 import com.anish.fileservice.dto.ApiResponseDto;
+import com.anish.fileservice.exception.MetadataStorageException;
+import com.anish.fileservice.exception.S3StorageProviderException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +34,37 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(MetadataStorageException.class)
+    public ResponseEntity<Object> handleMetadataStorageException(MetadataStorageException e) {
+        log.error("Metadata storage error: {}", e.getMessage(), e);
+        ApiResponseDto response = new ApiResponseDto(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                "A metadata storage error occurred. Please try again later.",
+                Boolean.FALSE
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
+
+    @ExceptionHandler(S3StorageProviderException.class)
+    public ResponseEntity<Object> handleS3StorageProviderException(S3StorageProviderException e) {
+        log.error("Storage provider error: {}", e.getMessage(), e);
+        ApiResponseDto response = new ApiResponseDto(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+                "A file storage error occurred. Please try again later.",
+                Boolean.FALSE
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleServerError(Exception e) {
         log.error("Server error: {}", e.getMessage(), e);
         ApiResponseDto response = new ApiResponseDto(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                e.getMessage(),
+                "An internal error occurred. Please try again later.",
                 Boolean.FALSE
         );
         return ResponseEntity.internalServerError().body(response);

@@ -28,7 +28,7 @@ public class FileController {
     @Operation
     @PostMapping(path = "/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> addFiles(@ModelAttribute FileUploadRequestDto fileUploadRequestDto) {
+    public ResponseEntity<Object> addFiles(@Valid @ModelAttribute FileUploadRequestDto fileUploadRequestDto) {
         List<FileUploadResponseDto> response = fileService.addFiles(fileUploadRequestDto);
         return ResponseEntity.ok().body(new ApiResponseDto(
                 HttpStatus.OK.value(),
@@ -51,7 +51,7 @@ public class FileController {
     }
 
     @GetMapping(path = "/files/{fileId}/presigned-url", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> generatePresignedUrl(@RequestParam @NotBlank String fileId) {
+    public ResponseEntity<Object> generatePresignedUrl(@PathVariable @NotBlank String fileId) {
         String response = fileService.generatePresignedUrl(fileId);
         return ResponseEntity.ok().body(new ApiResponseDto(
                 HttpStatus.OK.value(),
