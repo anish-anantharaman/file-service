@@ -6,7 +6,6 @@ import com.anish.fileservice.dto.*;
 import com.anish.fileservice.service.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -51,7 +50,7 @@ public class FileController {
     }
 
     @GetMapping(path = "/files/{fileId}/presigned-url", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> generatePresignedUrl(@PathVariable @NotBlank String fileId) {
+    public ResponseEntity<Object> generatePresignedUrl(@PathVariable String fileId) {
         String response = fileService.generatePresignedUrl(fileId);
         return ResponseEntity.ok().body(new ApiResponseDto(
                 HttpStatus.OK.value(),

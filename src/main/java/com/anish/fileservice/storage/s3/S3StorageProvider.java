@@ -36,8 +36,8 @@ public class S3StorageProvider implements ObjectStorageProvider {
     public SaveFileDto uploadFile(MultipartFile file, boolean isPublic) {
         try {
             String visibility = isPublic ? "public" : "private";
-            String key = String.format("%s/%s-%s", visibility,
-                    UUID.randomUUID(), file.getOriginalFilename());
+            String sanitizedName = file.getOriginalFilename().replace(" ", "");
+            String key = String.format("%s/%s-%s", visibility, UUID.randomUUID(), sanitizedName);
 
             PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder()
                     .bucket(storageProviderProperties.bucket())
