@@ -1,6 +1,7 @@
 package com.anish.fileservice.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.anish.fileservice.annotation.validation.ValidFile;
 import jakarta.validation.constraints.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,8 +13,9 @@ public record FileUploadRequestDto(
         @Schema(description = "List of files to upload. " +
                 "Multiple files can be provided in a single request.",
                 requiredMode = Schema.RequiredMode.REQUIRED)
-        @Size(min = 1, max = 10)
-        List<@NotNull MultipartFile> files,
+        @ValidFile
+        @Size(max = 10)
+        List<@ValidFile MultipartFile> files,
 
         @Schema(description = "Visibility of the uploaded files. " +
                 "'public' files can be accessed using their public URL, " +

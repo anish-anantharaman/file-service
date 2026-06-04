@@ -12,6 +12,7 @@ import com.anish.fileservice.storage.ObjectStorageProvider;
 import com.anish.fileservice.util.Constants;
 import com.anish.fileservice.util.mapper.Mapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileServiceImpl implements FileService {
 
     private final ObjectStorageProvider objectStorageProvider;
@@ -49,6 +51,7 @@ public class FileServiceImpl implements FileService {
             objectStorageProvider.deleteFiles(uploadedKeys);
             throw e;
         }
+        log.info("File(s) saved successfully");
         return metadataResult.stream()
                 .map(meta -> new FileUploadResponseDto(
                         meta.id(),
@@ -64,7 +67,8 @@ public class FileServiceImpl implements FileService {
         List<String> keys = metadataDto.stream()
                 .map(MetadataDto::key)
                 .toList();
-        objectStorageProvider.deleteFiles(keys);   // delete from S3
+        objectStorageProvider.deleteFiles(keys);   // delete from storage provider
+        log.info("File(s) deleted from cloud provider");
         List<String> foundIds = metadataDto.stream().map(MetadataDto::id).toList();
         return metadataService.markMetadataDeletedByIds(foundIds); // mark file as deleted in metadata storage
     }
@@ -75,11 +79,13 @@ public class FileServiceImpl implements FileService {
         if(metadataDto.isEmpty()) {
             throw new MetadataStorageException("No file found with ID=" + fileId);
         }
+        log.info("Generating presigned URL");
         return objectStorageProvider.generatePresignedUrl(metadataDto.getFirst().key());
     }
 
     @Override
     public List<MetadataDto> getMetadataByFileIds(List<String> fileIds) {
+        log.info("Fetching metadata by File IDs");
         return metadataService.getMetadataByIds(fileIds);
     }
 

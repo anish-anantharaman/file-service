@@ -3,7 +3,15 @@ spring:
     name: fileservice
   profiles:
     active: s3
+  mongodb:
+    host: ${MONGO_HOST}
+    port: ${MONGO_PORT}
+    username: ${MONGO_USERNAME}
+    password: ${MONGO_PASSWORD}
+    database: ${MONGO_DATABASE}
+    authentication-database: ${MONGO_AUTH_DATABASE:admin}
 
+# Cloud provider config
 storage:
   provider: ${STORAGE_PROVIDER:s3}
   bucket: ${STORAGE_BUCKET}
