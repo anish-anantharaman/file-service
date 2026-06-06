@@ -24,7 +24,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
         if(requestId == null || requestId.isBlank()) {
             requestId = UUID.randomUUID().toString();
         }
-        MDC.put(Constants.CommonConstants.REQUEST_ID_HEADER, requestId);
+        MDC.put(Constants.CommonConstants.REQUEST_ID, requestId);
         response.setHeader(Constants.CommonConstants.REQUEST_ID_HEADER, requestId);
 
         try {

@@ -1,10 +1,8 @@
 package com.anish.fileservice.annotation.swagger;
 
 import com.anish.fileservice.dto.ApiResponseDto;
-import com.anish.fileservice.util.swagger.Swagger;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.MediaType;
@@ -25,8 +23,8 @@ import java.lang.annotation.*;
         },
         content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = ApiResponseDto.class),
-                examples = @ExampleObject(value = Swagger.SwaggerExampleResponses.SUCCESS)
+                schema = @Schema(implementation = ApiResponseDto.class)
         ))
-public @interface SaveFileSuccessResponse {
+public @interface SuccessResponse {
+    String example() default "";
 }

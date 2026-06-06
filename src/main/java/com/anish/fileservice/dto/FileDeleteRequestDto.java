@@ -10,6 +10,7 @@ import java.util.List;
 public record FileDeleteRequestDto(
 
         @Schema(description = "Unique file IDs to delete",
+        example = "[\"6a240c597757062ff26cbc7a\"]",
         requiredMode = Schema.RequiredMode.REQUIRED)
         @Size(min = 1, max = 10)
         List<@NotBlank String> fileIds
