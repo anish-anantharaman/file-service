@@ -8,15 +8,12 @@ public record ApiResponseDto(
         @Schema(description = "HTTP status code of the response", example = "200")
         int statusCode,
 
-        @Schema(description = "HTTP status message", example = "Success")
+        @Schema(description = "HTTP status message", example = "OK")
         String statusMessage,
 
         @Schema(description = "Custom message describing the result", example = "File(s) uploaded successfully")
         String message,
 
-        @Schema(description = "Payload of the response, can be any type",
-                example = """
-                file service response to be included here
-                """)
+        @Schema(description = "Payload of the response, can be any type")
         Object data
 ) { }

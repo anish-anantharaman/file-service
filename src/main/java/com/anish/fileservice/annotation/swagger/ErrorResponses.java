@@ -50,5 +50,5 @@ import java.lang.annotation.*;
 
         )
 })
-public @interface CommonErrorResponses {
+public @interface ErrorResponses {
 }

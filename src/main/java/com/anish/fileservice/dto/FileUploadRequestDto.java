@@ -14,7 +14,7 @@ public record FileUploadRequestDto(
                 "Multiple files can be provided in a single request.",
                 requiredMode = Schema.RequiredMode.REQUIRED)
         @ValidFile
-        @Size(max = 10)
+        @Size(min = 1, max = 10)
         List<@ValidFile MultipartFile> files,
 
         @Schema(description = "Visibility of the uploaded files. " +

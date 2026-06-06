@@ -10,7 +10,8 @@ public class Constants {
 
         public static final String PUBLIC = "public";
         public static final String DELETED_AT_MILLIS = "deletedAtMillis";
-        public static final String REQUEST_ID_HEADER = "X-RequestId";
+        public static final String REQUEST_ID_HEADER = "X-Request-Id";
+        public static final String REQUEST_ID = "requestId";
     }
 
     public static final class MongoConstants {
